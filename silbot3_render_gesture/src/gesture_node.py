@@ -12,7 +12,7 @@ import random
 
 from silbot3_msgs.srv import ExpressionStart
 from silbot3_msgs.srv import ExpressionStartRequest
-from silbot3_msgs.msg import ExpressionStatus
+from silbot3_msgs.msg import ExpressionStatus, ExpressionSetModality
 
 from mind_msgs.msg import RenderItemAction, RenderItemResult, RenderItemFeedback
 from mind_msgs.srv import GetInstalledGestures, GetInstalledGesturesResponse
@@ -22,12 +22,24 @@ class Silbot3Gesture:
         self.startMotion = rospy.ServiceProxy('/silbot3_expression/start', ExpressionStart)
         self.stopMotion = rospy.ServiceProxy('/silbot3_expression/stop', ExpressionStart)
         self.subscriber = rospy.Subscriber('/silbot3_expression/status', ExpressionStatus, self.handle_expression_status)
+        self.pub_set_modality = rospy.Publisher('/silbot3_expression/set_modality', ExpressionSetModality, queue_size=10)
 
         self.motionFinished = False
         self.lock = threading.RLock()
 
         self.startMotion.wait_for_service()
         self.stopMotion.wait_for_service()
+
+        set_msg = ExpressionSetModality()
+        set_msg.left_arm_enabled = True
+        set_msg.right_arm_enabled = True
+        set_msg.neck_enabled = False
+        set_msg.wheel_enabled = False
+        set_msg.face_enabled = False
+        set_msg.led_enabled = False
+        set_msg.sound_enabled = False
+        self.pub_set_modality.publish(set_msg)
+        rospy.sleep(1.0)
 
         try:
             motion_file = rospy.get_param('~motion_file')
@@ -96,7 +108,7 @@ class Silbot3Gesture:
                     split_data = self.gesture.split('/')
 
                     req = ExpressionStartRequest()
-                    req.expression_type = 0
+                    req.expression_type = 2
                     req.package = split_data[0]
                     req.category = split_data[1]
                     req.id = split_data[2]

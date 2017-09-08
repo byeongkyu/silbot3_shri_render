@@ -1,39 +1,48 @@
 neutral: [
-    office/guide/1,
+    sm/neutral/1,
+    sm/neutral/2,
+    sm/neutral/3,
+    sm/neutral/4,
 ]
 
 encourage: [
-    office/guide/1,
+    sm/encourage/1,
 ]
 
 attention: [
-    office/guide/1,
+    sm/attention/1,
+    sm/attention/2,
 ]
 
 consolation: [
-    office/guide/1,
+    sm/consolation/1,
 ]
 
 greeting: [
-    office/guide/1,
+    sm/greeting/1,
+    sm/greeting/2,
+    sm/open/1,
 ]
 
 waiting: [
-    office/guide/1,
+    sm/close/1,
 ]
 
 advice: [
-    office/guide/1,
+    sm/pointing/1,
+    sm/pointing/2,
 ]
 
 praise: [
-    office/guide/1,
+    sm/praise/1
 ]
 
 command: [
-    office/guide/1,
+    sm/command/1,
+    sm/command/2,
 ]
 
 user-defined: [
-    office/guide/2,
+    sm/user/1,
+    sm/user/2
 ]
