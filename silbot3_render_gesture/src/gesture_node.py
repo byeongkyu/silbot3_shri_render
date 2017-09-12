@@ -115,6 +115,7 @@ class Silbot3Gesture:
                     req.content = ''
                     res = self.startMotion(req)
 
+                rospy.sleep(0.05)
                 rospy.loginfo("Waiting for behavior execution to complete")
                 while not self.motionFinished and not rospy.is_shutdown():
                     rospy.sleep(0.2)
@@ -146,7 +147,8 @@ class Silbot3Gesture:
                     req.content = ''
                     res = self.startMotion(req)
 
-                    rospy.logdebug("Waiting for behavior execution to complete")
+                    rospy.sleep(0.05)
+                    rospy.loginfo("Waiting for behavior execution to complete")
                     while not self.motionFinished and not rospy.is_shutdown():
                         rospy.sleep(0.2)
 
@@ -154,8 +156,7 @@ class Silbot3Gesture:
                         self.gesture = None
                         succeed = True
 
-        if success:
-            rospy.loginfo("TEST")
+        if success:            
             result.result = True
             self.motionFinished = False
             self.server.set_succeeded(result)

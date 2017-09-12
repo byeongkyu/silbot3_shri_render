@@ -20,7 +20,7 @@ def main():
 	client = actionlib.SimpleActionClient('render_gesture', RenderItemAction)
 	client.wait_for_server()
 
-	goal = RenderItemGoal(name='gesture', data="gesture=play:office/guide/2")
+	goal = RenderItemGoal(name='gesture', data="gesture=play:sm/open/1")
 	client.send_goal(goal, done_cb=func_done, feedback_cb=func_feedback, active_cb=func_active)
 
 	#rospy.sleep(10)

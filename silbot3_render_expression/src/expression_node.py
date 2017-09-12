@@ -31,7 +31,7 @@ class Silbot3FacialExpression:
         feedback = RenderItemFeedback()
         success = True
 
-        rospy.sleep(0.2)
+        rospy.sleep(0.5)
 
         led_msg = Device_LED_Msg()
         led_msg.command = "on"
@@ -45,7 +45,6 @@ class Silbot3FacialExpression:
         rospy.sleep(1)
 
         # Facial Expression
-
 
         if success:
             result.result = True
