@@ -8,8 +8,7 @@ project(silbot3_render_screen)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  rospy
-  silbot3_msgs
+  rospy  
 )
 
 ## System dependencies are found with CMake's conventions
