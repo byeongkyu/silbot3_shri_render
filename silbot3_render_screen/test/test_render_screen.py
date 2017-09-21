@@ -19,7 +19,7 @@ def main():
     client = actionlib.SimpleActionClient('render_screen', RenderItemAction)
     client.wait_for_server()
 
-    goal = RenderItemGoal(name='screen', data='show:name1/{"aa":"11"}')
+    goal = RenderItemGoal(name='screen', data='show:mainView/{}')
     client.send_goal(goal, done_cb=func_done, active_cb=func_active)
 
     client.wait_for_result()
