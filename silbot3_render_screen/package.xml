@@ -7,7 +7,7 @@
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="silbot3@todo.todo">silbot3</maintainer>
+  <maintainer email="byeongkyu@todo.todo">byeongkyu</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -40,14 +40,13 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rospy</build_depend>  
-  <run_depend>rospy</run_depend>
-
+  <build_depend>rospy</build_depend>
+  <build_depend>mind_msgs</build_depend>
+  <run_depend>rospy</run_depend>  
+  <run_depend>mind_msgs</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
   </export>
 </package>
