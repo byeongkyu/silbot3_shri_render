@@ -10,15 +10,21 @@ import json
 import actionlib
 import urllib
 
+from OpenGL import GL
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
-from PyQt5.QtWebKit import QWebSettings
-from PyQt5.QtWebKitWidgets import QWebView
+# from PyQt5.QtWebEngine import QWebSettings
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtNetwork import QSslConfiguration, QSsl
 
 from std_msgs.msg import String
 from mind_msgs.msg import RenderItemAction, RenderItemResult
+
+
+class CustomWebEnginePage(QWebEnginePage):
+    def certificateError(self, error):
+        return True
 
 
 class RenderScreenGui(QMainWindow):
@@ -27,13 +33,9 @@ class RenderScreenGui(QMainWindow):
 
     def __init__(self):
         super(RenderScreenGui, self).__init__()
-        self.view = QWebView()
+        self.view = QWebEngineView()
         self.setCentralWidget(self.view)
         self.setWindowFlags(Qt.FramelessWindowHint)
-
-        page = self.view.page()
-        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-        page.networkAccessManager().sslErrors.connect(self.sslErrorHandler)
 
         self.view.loadFinished.connect(self.handle_load_finished)
         self.signalHandleView.connect(self.handle_view)
@@ -61,11 +63,6 @@ class RenderScreenGui(QMainWindow):
         self.hide()
         rospy.loginfo('%s initialized...'%rospy.get_name())
 
-    def sslErrorHandler(self, reply, errorList):
-        url = unicode(reply.url().toString())
-        reply.ignoreSslErrors()
-        rospy.logwarn("SSL certificate error ignored: %s" % url)
-
     def handle_load_finished(self):
         rospy.logdebug('loading completed...')
 
@@ -89,11 +86,12 @@ class RenderScreenGui(QMainWindow):
 
         data_str = urllib.urlencode(json.loads(data))
 
+        page = CustomWebEnginePage(self.view)
         if not self.use_remote:
-            self.view.load(QUrl("file://" + url_s + '?' + data_str))
+            page.load(QUrl("file://" + url_s + '?' + data_str))
         else:
-            self.view.load(QUrl(url_s + '?' + data_str))
-
+            page.load(QUrl(url_s + '?' + data_str))
+        self.view.setPage(page)
 
     def execute_callback(self, goal):
         result = RenderItemResult()
