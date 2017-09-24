@@ -9,6 +9,7 @@ import rospkg
 import json
 import actionlib
 import urllib
+import socket
 
 from OpenGL import GL
 from PyQt5.uic import loadUi
@@ -40,6 +41,10 @@ class RenderScreenGui(QMainWindow):
         self.view.loadFinished.connect(self.handle_load_finished)
         self.signalHandleView.connect(self.handle_view)
         self.signalHandleCommand.connect(self.handle_command)
+
+        self.current_address = [ip for ip in socket.gethostbyname_ex(
+            socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+        self.current_port = rospy.get_param('/rosbridge_websocket/port', 9090)
 
         try:
             self.resource_path = rospy.get_param('~resource_path')
@@ -85,12 +90,13 @@ class RenderScreenGui(QMainWindow):
                 return
 
         data_str = urllib.urlencode(json.loads(data))
+        address_str = 'ws://' + self.current_address + ':' + str(self.current_port)
 
         page = CustomWebEnginePage(self.view)
         if not self.use_remote:
-            page.load(QUrl("file://" + url_s + '?' + data_str))
+            page.load(QUrl("file://" + url_s + '?' + address_str + '&' + data_str))
         else:
-            page.load(QUrl(url_s + '?' + data_str))
+            page.load(QUrl(url_s + '?' + address_str + '&' + data_str))
         self.view.setPage(page)
 
     def execute_callback(self, goal):
