@@ -81,7 +81,7 @@ class RenderScreenGui(QMainWindow):
             self.hide()
 
     def handle_view(self, name, data):
-        url_s = self.resource_path + '/' + name + '.html'
+        url_s = self.resource_path + '/mainView.html'
         if not self.use_remote:
             if not os.path.exists(url_s):
                 url_s = self.resource_path + '/' + name + '.htm'
@@ -89,14 +89,15 @@ class RenderScreenGui(QMainWindow):
                 rospy.logerr('the file not exists. please check the file or resource path...')
                 return
 
-        data_str = urllib.urlencode(json.loads(data))
-        address_str = 'ros=wss://' + self.current_address + ':' + str(self.current_port)
+        address_str = urllib.quote('wss://' + self.current_address + ':' + str(self.current_port))
+        screen_str = urllib.quote(screen)
+        data_str = urllib.quote(data)
 
         page = CustomWebEnginePage(self.view)
         if not self.use_remote:
-            page.load(QUrl("file://" + url_s + '?' + address_str + '&' + data_str))
+            page.load(QUrl("file://" + url_s + '?ros=' + address_str + '&data=' + data_str + '&name=' + screen_str))
         else:
-            page.load(QUrl(url_s + '?' + address_str + '&' + data_str))
+            page.load(QUrl(url_s + '?ros=' + address_str + '&data=' + data_str + '&name=' + screen_str))
         self.view.setPage(page)
 
     def execute_callback(self, goal):
