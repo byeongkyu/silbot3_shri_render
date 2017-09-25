@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
+import sys
 import rospy
 import tf2_ros
 import numpy as np
+import threading
+import math
 
 from mind_msgs.msg import GazeCommand
 from tf2_geometry_msgs import PointStamped
+# from geometry_msgs.msg import PointStamped
+from std_msgs.msg import Float64
 
 
 class GazeRenderNode:
@@ -18,13 +23,22 @@ class GazeRenderNode:
         rospy.Subscriber('gaze_command', GazeCommand, self.handle_gaze_point)
         self.pub_pan = rospy.Publisher('head_pan/command', Float64, queue_size=10)
         self.pub_tilt = rospy.Publisher('head_tilt/command', Float64, queue_size=10)
+        self.pub_xtion_tilt = rospy.Publisher('xtion_tilt/command', Float64, queue_size=10)
+        self.pub_pan_max_speed = rospy.Publisher('head_pan_max_speed/command', Float64, queue_size=10)
+        self.pub_tilt_max_speed = rospy.Publisher('head_tilt_max_speed/command', Float64, queue_size=10)
+
+        rospy.sleep(0.5)
+
+        self.pub_pan_max_speed.publish(30.0)
+        self.pub_tilt_max_speed.publish(30.0)
+        self.pub_xtion_tilt.publish(0.45)
 
         with self.lock:
             self.target = GazeCommand()
             self.target.target_point.header.frame_id = "base_footprint"
             self.target.target_point.point.x = 2.0
             self.target.target_point.point.y = 0.0
-            self.target.target_point.point.z = 1.5
+            self.target.target_point.point.z = 1.0
             self.target.max_speed = 0.1
 
         rospy.Timer(rospy.Duration(0.1), self.handle_gaze_controller)
@@ -39,7 +53,7 @@ class GazeRenderNode:
                 aaa.point.x = self.target.target_point.point.x
                 aaa.point.y = self.target.target_point.point.y
                 aaa.point.z = self.target.target_point.point.z
-                point_transformed = self.tf_buf.transform(aaa, 'gaze')
+                point_transformed = self.tf_buf.transform(aaa, 'head_base')
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
                 e = sys.exc_info()[0]
                 rospy.logdebug(e)
@@ -49,8 +63,10 @@ class GazeRenderNode:
         pan_angle = math.atan2(point_transformed.point.y, point_transformed.point.x)
         tilt_angle = math.atan2(point_transformed.point.z, point_transformed.point.x)
 
-        self.pub_pan.publish(0.0)
-        self.pub_tilt.publish(0.0)
+        # print pan_angle * 180 / math.pi, tilt_angle * 180 / math.pi
+
+        self.pub_pan.publish(pan_angle)
+        self.pub_tilt.publish(tilt_angle)
 
     def handle_gaze_point(self, msg):
         with self.lock:
