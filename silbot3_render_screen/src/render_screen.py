@@ -90,7 +90,7 @@ class RenderScreenGui(QMainWindow):
                 return
 
         address_str = urllib.quote('wss://' + self.current_address + ':' + str(self.current_port))
-        screen_str = urllib.quote(screen)
+        screen_str = urllib.quote(name)
         data_str = urllib.quote(data)
 
         page = CustomWebEnginePage(self.view)
