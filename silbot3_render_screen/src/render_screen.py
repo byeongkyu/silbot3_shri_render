@@ -90,7 +90,7 @@ class RenderScreenGui(QMainWindow):
                 return
 
         data_str = urllib.urlencode(json.loads(data))
-        address_str = 'ws://' + self.current_address + ':' + str(self.current_port)
+        address_str = 'ros=wss://' + self.current_address + ':' + str(self.current_port)
 
         page = CustomWebEnginePage(self.view)
         if not self.use_remote:
