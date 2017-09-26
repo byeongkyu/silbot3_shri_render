@@ -32,8 +32,8 @@ class GazeRenderNode:
         rospy.Subscriber('0_enable_gaze', Bool, self.handle_enable_gaze)
         rospy.sleep(0.5)
 
-        self.pub_pan_max_speed.publish(40.0)
-        self.pub_tilt_max_speed.publish(40.0)
+        self.pub_pan_max_speed.publish(32.0)
+        self.pub_tilt_max_speed.publish(32.0)
         self.pub_xtion_tilt.publish(0.46)
 
         with self.lock:
@@ -72,7 +72,7 @@ class GazeRenderNode:
 
         # print pan_angle * 180 / math.pi, tilt_angle * 180 / math.pi
 
-        if self.enable_gaze:            
+        if self.enable_gaze:
             self.pub_pan.publish(pan_angle)
             self.pub_tilt.publish(tilt_angle)
 
