@@ -16,6 +16,8 @@ from silbot3_msgs.msg import ExpressionStatus, ExpressionSetModality
 
 from mind_msgs.msg import RenderItemAction, RenderItemResult, RenderItemFeedback
 from mind_msgs.srv import GetInstalledGestures, GetInstalledGesturesResponse
+from std_msgs.msg import Bool
+
 
 class Silbot3Gesture:
     def __init__(self):
@@ -23,6 +25,8 @@ class Silbot3Gesture:
         self.stopMotion = rospy.ServiceProxy('/silbot3_expression/stop', ExpressionStart)
         self.subscriber = rospy.Subscriber('/silbot3_expression/status', ExpressionStatus, self.handle_expression_status)
         self.pub_set_modality = rospy.Publisher('/silbot3_expression/set_modality', ExpressionSetModality, queue_size=10)
+
+        self.pub_enable_gaze = rospy.Publisher('0_enable_gaze', Bool, queue_size=10)
 
         self.motionFinished = False
         self.lock = threading.RLock()
@@ -70,13 +74,19 @@ class Silbot3Gesture:
 
     def handle_expression_status(self, msg):
         rospy.sleep(0.1)
+        print msg.expression_status
         if msg.expression_status == 0:
             self.motionFinished = True
+        else:
+            self.motionFinished = False
 
     def execute_callback(self, goal):
         result = RenderItemResult()
         feedback = RenderItemFeedback()
         success = True
+
+        self.pub_enable_gaze.publish(False)
+        print "Disapble Gaze"
 
         gesture_type, gesture_data = goal.data.split('=')
 
@@ -114,8 +124,9 @@ class Silbot3Gesture:
                     req.id = split_data[2]
                     req.content = ''
                     res = self.startMotion(req)
+                    self.motionFinished = False
 
-                rospy.sleep(0.05)
+                rospy.sleep(0.1)
                 rospy.loginfo("Waiting for behavior execution to complete")
                 while not self.motionFinished and not rospy.is_shutdown():
                     rospy.sleep(0.2)
@@ -146,8 +157,9 @@ class Silbot3Gesture:
                     req.id = split_data[2]
                     req.content = ''
                     res = self.startMotion(req)
+                    self.motionFinished = False
 
-                    rospy.sleep(0.05)
+                    rospy.sleep(0.1)
                     rospy.loginfo("Waiting for behavior execution to complete")
                     while not self.motionFinished and not rospy.is_shutdown():
                         rospy.sleep(0.2)
@@ -156,9 +168,11 @@ class Silbot3Gesture:
                         self.gesture = None
                         succeed = True
 
-        if success:            
+        if success:
             result.result = True
             self.motionFinished = False
+            self.pub_enable_gaze.publish(True)
+            print "Enable Gaze"
             self.server.set_succeeded(result)
 
     def stop_gesture(self):

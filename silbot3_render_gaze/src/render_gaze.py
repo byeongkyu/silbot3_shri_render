@@ -11,7 +11,7 @@ import math
 from mind_msgs.msg import GazeCommand
 from tf2_geometry_msgs import PointStamped
 # from geometry_msgs.msg import PointStamped
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Bool
 
 
 class GazeRenderNode:
@@ -27,11 +27,14 @@ class GazeRenderNode:
         self.pub_pan_max_speed = rospy.Publisher('head_pan_max_speed/command', Float64, queue_size=10)
         self.pub_tilt_max_speed = rospy.Publisher('head_tilt_max_speed/command', Float64, queue_size=10)
 
+        with self.lock:
+            self.enable_gaze = True
+        rospy.Subscriber('0_enable_gaze', Bool, self.handle_enable_gaze)
         rospy.sleep(0.5)
 
-        self.pub_pan_max_speed.publish(30.0)
-        self.pub_tilt_max_speed.publish(30.0)
-        self.pub_xtion_tilt.publish(0.45)
+        self.pub_pan_max_speed.publish(40.0)
+        self.pub_tilt_max_speed.publish(40.0)
+        self.pub_xtion_tilt.publish(0.46)
 
         with self.lock:
             self.target = GazeCommand()
@@ -43,6 +46,10 @@ class GazeRenderNode:
 
         rospy.Timer(rospy.Duration(0.1), self.handle_gaze_controller)
         rospy.loginfo('[%s] initialzed...' % rospy.get_name())
+
+    def handle_enable_gaze(self, msg):
+        with self.lock:
+            self.enable_gaze = msg.data
 
     def handle_gaze_controller(self, event):
         with self.lock:
@@ -65,8 +72,9 @@ class GazeRenderNode:
 
         # print pan_angle * 180 / math.pi, tilt_angle * 180 / math.pi
 
-        self.pub_pan.publish(pan_angle)
-        self.pub_tilt.publish(tilt_angle)
+        if self.enable_gaze:            
+            self.pub_pan.publish(pan_angle)
+            self.pub_tilt.publish(tilt_angle)
 
     def handle_gaze_point(self, msg):
         with self.lock:
