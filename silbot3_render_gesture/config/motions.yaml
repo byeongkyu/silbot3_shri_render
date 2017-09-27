@@ -45,6 +45,10 @@ command: [
     sm/command/2,
 ]
 
+open: [
+    sm/open/1,
+]
+
 user-defined: [
     sm/open/1,
     sm/close/1,

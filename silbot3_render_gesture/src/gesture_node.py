@@ -74,7 +74,6 @@ class Silbot3Gesture:
 
     def handle_expression_status(self, msg):
         rospy.sleep(0.1)
-        print msg.expression_status
         if msg.expression_status == 0:
             self.motionFinished = True
         else:
@@ -86,8 +85,6 @@ class Silbot3Gesture:
         success = True
 
         self.pub_enable_gaze.publish(False)
-        print "Disapble Gaze"
-
         gesture_type, gesture_data = goal.data.split('=')
 
         if gesture_type == 'gesture':
@@ -172,7 +169,6 @@ class Silbot3Gesture:
             result.result = True
             self.motionFinished = False
             self.pub_enable_gaze.publish(True)
-            print "Enable Gaze"
             self.server.set_succeeded(result)
 
     def stop_gesture(self):
@@ -180,6 +176,7 @@ class Silbot3Gesture:
             if self.gesture and self.actionlibServer.is_active():
                 # ? Stop gesture
                 pass
+
 
 if __name__ == '__main__':
     rospy.init_node('silbot3_facial_expression', anonymous=False)

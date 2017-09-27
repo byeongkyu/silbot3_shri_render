@@ -27,6 +27,7 @@ def noalsaerr():
     yield
     asound.snd_lib_error_set_handler(None)
 
+
 class Silbot3RenderSpeech:
     def __init__(self):
         # For Silbot3
@@ -73,10 +74,13 @@ class Silbot3RenderSpeech:
             paudio = pyaudio.PyAudio()
 
         wave_file = wave.open(filename, 'rb')
-        stream = paudio.open(format=paudio.get_format_from_width(wave_file.getsampwidth()),
-                             channels=wave_file.getnchannels(),
-                             rate=wave_file.getframerate(),
-                             output=True)
+        try:
+            stream = paudio.open(format=paudio.get_format_from_width(wave_file.getsampwidth()),
+                                 channels=wave_file.getnchannels(),
+                                 rate=wave_file.getframerate(),
+                                 output=True)
+        except IOError:
+            return
 
         chunk_size = 1024
         data = wave_file.readframes(chunk_size)
@@ -98,6 +102,7 @@ class Silbot3RenderSpeech:
 
         if result.result:
             self.server.set_succeeded(result)
+
 
 if __name__ == '__main__':
     rospy.init_node('silbot3_render_speech', anonymous=False)
