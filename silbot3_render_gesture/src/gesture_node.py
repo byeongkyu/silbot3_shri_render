@@ -115,7 +115,7 @@ class Silbot3Gesture:
                     split_data = self.gesture.split('/')
 
                     req = ExpressionStartRequest()
-                    req.expression_type = 2
+                    req.expression_type = 0
                     req.package = split_data[0]
                     req.category = split_data[1]
                     req.id = split_data[2]
