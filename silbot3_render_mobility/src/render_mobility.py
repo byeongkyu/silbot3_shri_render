@@ -11,6 +11,7 @@ import yaml
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from mind_msgs.msg import RenderItemAction, RenderItemResult, RenderItemFeedback
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from std_srvs.srv import Empty
 
 
 class Silbot3Mobility:
@@ -81,12 +82,16 @@ class Silbot3Mobility:
             move_goal.target_pose.pose.position.y = self.waypoints[target_waypoint][1]
             move_goal.target_pose.pose.position.z = 0.0
 
-            quat = tf.transformations.quaternion_from_euler(0.0, 0.0, self.waypoints['home'][2])
+            quat = tf.transformations.quaternion_from_euler(0.0, 0.0, self.waypoints[target_waypoint][2])
 
             move_goal.target_pose.pose.orientation.x = quat[0]
             move_goal.target_pose.pose.orientation.y = quat[1]
             move_goal.target_pose.pose.orientation.z = quat[2]
             move_goal.target_pose.pose.orientation.w = quat[3]
+
+            rospy.wait_for_service('/move_base/clear_costmaps')
+            clear_map = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+            clear_map()
 
             self.client.send_goal(move_goal, done_cb=self.handle_moving_done, feedback_cb=self.handle_moving_feedback)
             self.is_mobile_moving = True
