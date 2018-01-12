@@ -50,7 +50,7 @@ class Silbot3RenderSpeech:
         result.result = True
 
         msg = TTSSetProperties()
-        msg.speaker_id = 3 #SPEAKER_ID_ENGLISH_FEMALE=3, SPEAKER_ID_ENGLISH_MALE=4
+        msg.speaker_id = 0 #SPEAKER_ID_ENGLISH_FEMALE=3, SPEAKER_ID_ENGLISH_MALE=4
         msg.speed = 100
         msg.volume = 100
         msg.pitch = 100
